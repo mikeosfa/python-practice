@@ -6,13 +6,13 @@ def get_uk_holidays(year):
     response = requests.get(url)
     if response.status_code == 200:
         data = response.json()
-        regions = ["england-and-wales", "scotland"] 
+        regions = ["england-and-wales"] 
         grouped = defaultdict(list)
 
         for region in regions: 
             for event in data[region]["events"]:
-                if not event["date"].startswith(str(year)):
-                    continue
+                if not event["date"].startswith((str(year),str(year + 1))):
+                    continue    
                 grouped[event["date"]].append({
                     "title": event["title"],
                       "region": region
