@@ -1,0 +1,4 @@
+hostname,environment,os,cpu,memory,patch_date
+server01,prod,Windows Server 2022,8,32,2026-07-01
+server02,test,Ubuntu 24.04,4,16,2026-06-10
+server03,prod,Windows Server 2019,8,16,2025-12-01
