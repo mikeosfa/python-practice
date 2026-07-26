@@ -102,7 +102,7 @@ def main():
     for row in servers_need_patching:
         days_ago = datetime.today() - datetime.strptime(row["patch_date"], "%Y-%m-%d") 
         print(
-            f"{row['hostname']}: patch date: {row['patch_date']}) "
+            f"{row['hostname']}: patch date: {row['patch_date']} "
             f"Last Patched {days_ago.days} days ago"
         )
 
