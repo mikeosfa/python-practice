@@ -60,8 +60,6 @@ Future Improvements
 
 Possible enhancements:
 
-Allow year input from the command line.
 Support Scotland and Northern Ireland regions.
 Add date sorting.
-Export results to CSV.
 Add error handling for API failures.

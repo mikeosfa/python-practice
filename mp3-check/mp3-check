@@ -1,0 +1,104 @@
+import argparse
+import csv
+from pathlib import Path
+from mutagen.mp3 import MP3
+from mutagen.id3 import ID3
+
+
+def get_tag(tags, tag_name):
+    tag = tags.get(tag_name)
+
+    if tag:
+        return tag.text[0]
+
+    return ""
+
+
+def format_duration(seconds):
+    minutes = int(seconds // 60)
+    seconds = int(seconds % 60)
+
+    return f"{minutes:02}:{seconds:02}"
+
+
+def build_mp3_list(file_path):
+    mp3_list = []
+    folder = Path(file_path)
+
+    for file in folder.iterdir():
+        if file.is_file():
+            if file.suffix.lower() != ".mp3":
+                continue
+
+            audio = MP3(file, ID3=ID3)
+
+            # If the file has no tags, use an empty dictionary
+            tags = audio.tags or {}
+
+            mp3_dict = {
+                "track_name": file.stem,
+                "title": get_tag(tags, "TIT2"),
+                "artist": get_tag(tags, "TPE1"),
+                "album": get_tag(tags, "TALB"),
+                "bpm": get_tag(tags, "TBPM"),
+                "genre": get_tag(tags, "TCON"),
+                "duration": format_duration(audio.info.length),
+                "extension": file.suffix,
+                "full_file_name": file.name
+            }
+
+            mp3_list.append(mp3_dict)
+
+    return mp3_list
+
+
+def add_to_csv(mp3_list, folder):
+    csv_filename = f"mp3-list-{folder}.csv"
+
+    fieldnames = [
+        "track_name",
+        "title",
+        "artist",
+        "album",
+        "bpm",
+        "genre",
+        "duration",
+        "extension",
+        "full_file_name"
+    ]
+
+    with open(csv_filename, mode="w", newline="", encoding="utf-8-sig") as file:
+        writer = csv.DictWriter(file, fieldnames=fieldnames)
+
+        writer.writeheader()
+
+        for mp3 in mp3_list:
+            writer.writerow(mp3)
+
+    print(f"csv saved down at: {csv_filename}")
+
+
+def main(file_path):
+
+    folder = Path(file_path).name
+
+    my_mp3_list = build_mp3_list(file_path)
+
+    add_to_csv(my_mp3_list, folder)
+
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(
+        description="Enter the folder path to scan"
+    )
+
+    parser.add_argument(
+        "--file_path",
+        type=str,
+        default=r"\\LilNAS\Media\Dj Pools Music Pack. [21 January 2026]\Beatport - Curation Best of Trance (R H)",
+        help="Absolute folder path"
+    )
+
+    args = parser.parse_args()
+
+    main(args.file_path)
